@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/agl/ed25519"
-	"github.com/agl/pond/bbssig"
 	pond "github.com/agl/pond/protos"
 	"github.com/agl/pond/transport"
 	"github.com/golang/protobuf/proto"
@@ -979,9 +978,10 @@ func (s *Server) fetch(from *[32]byte, fetch *pond.Fetch) (*pond.Reply, string) 
 	fetched := &pond.Fetched{
 		// GroupSignature: del.GroupSignature,
 		// Generation:     del.Generation,
-		//Fixme
-		HMAC:				del.HmacOfPublicKey,
-		Message:        del.Message,
+		OneTimePublicKey: del.OneTimePublicKey,
+		HmacOfPublicKey:	del.HmacOfPublicKey,
+		OneTimeSignature: del.OneTimeSignature,
+		Message:        	del.Message,
 		Details: &pond.AccountDetails{
 			Queue:    proto.Uint32(queueLen),
 			MaxQueue: proto.Uint32(0),

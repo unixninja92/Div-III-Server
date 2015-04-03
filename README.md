@@ -1,6 +1,8 @@
 Div III Server
 ====
 
+Fork for pond server for SnapSecure
+
 The code here is broken down as follows:
 
  - `protos` contains the protocol buffer files for client to server communication.

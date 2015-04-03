@@ -1,0 +1,20 @@
+language: go
+go:
+  - 1.2
+  - release
+  - tip
+branches:
+  only:
+    - master
+install:
+  - go get github.com/unixninja92/Div-III-Server/server
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq golang git libtspi-dev trousers tor mercurial pkg-config
+  - cd; mkdir gopkg; export GOPATH=$HOME/gopkg
+script:
+  - go build github.com/unixninja92/Div-III-Server/server
+  # This currently fails:
+  #- go test -tags ubuntu github.com/agl/pond/server
+  # This requires some work to run a server and then we may also run the transport tests:
+  # go test github.com/agl/pond/transport

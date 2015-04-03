@@ -283,8 +283,8 @@ func (c *Conn) decrypt(data []byte) ([]byte, error) {
 	return decrypted, nil
 }
 
-var serverKeysMagic = []byte("server keys\x00")
-var clientKeysMagic = []byte("client keys\x00")
+var serverKeysMagic = []byte("server keys snap")
+var clientKeysMagic = []byte("client keys snap")
 
 func (c *Conn) setupKeys(ephemeralShared *[32]byte) {
 	var writeMagic, readMagic []byte
@@ -307,8 +307,8 @@ func (c *Conn) setupKeys(ephemeralShared *[32]byte) {
 	c.readKeyValid = true
 }
 
-var serverProofMagic = []byte("server proof\x00")
-var clientProofMagic = []byte("client proof\x00")
+var serverProofMagic = []byte("server proof snap")
+var clientProofMagic = []byte("client proof snap")
 
 var shortMessageError = errors.New("transport: received short handshake message")
 

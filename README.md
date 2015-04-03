@@ -1,5 +1,6 @@
 Div III Server
 ====
+[![Build Status](https://travis-ci.org/unixninja92/Div-III-Server.png)](https://travis-ci.org/unixninja92/Div-III-Server)
 
 Fork for pond server for SnapSecure
 

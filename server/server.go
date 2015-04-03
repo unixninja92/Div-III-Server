@@ -603,7 +603,7 @@ func (s *Server) newAccount(from *[32]byte, req *pond.NewAccount) *pond.Reply {
 		return &pond.Reply{Status: pond.Reply_REGISTRATION_DISABLED.Enum()}
 	}
 
-	var ok bool
+	// var ok bool
 	// account.group, ok = new(bbssig.Group).Unmarshal(req.Group)
 	// if !ok {
 	// 	return &pond.Reply{Status: pond.Reply_PARSE_ERROR.Enum()}
@@ -809,7 +809,7 @@ func (s *Server) deliver(from *[32]byte, del *pond.Delivery) *pond.Reply {
 	// 	return &pond.Reply{Status: pond.Reply_PARSE_ERROR.Enum()}
 	// }
 
-	hmacAuthenticated := len(del.OneTimePublicKey) > 0
+	// hmacAuthenticated := len(del.OneTimePublicKey) > 0
 	// groupSignatureAuthenticated := len(del.GroupSignature) > 0
 
 	// if hmacAuthenticated == groupSignatureAuthenticated {

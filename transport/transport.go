@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	pond "github.com/agl/pond/protos"
+	pond "github.com/unixninja92/Div-III-Server/protos"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/crypto/curve25519"
 	"golang.org/x/crypto/nacl/secretbox"

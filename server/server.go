@@ -18,8 +18,8 @@ import (
 	"time"
 
 	"github.com/agl/ed25519"
-	pond "github.com/agl/pond/protos"
-	"github.com/agl/pond/transport"
+	pond "github.com/unixninja92/Div-III-Server/protos"
+	"github.com/unixninja92/Div-III-Server/transport"
 	"github.com/golang/protobuf/proto"
 )
 

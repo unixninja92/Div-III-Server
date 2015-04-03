@@ -16,9 +16,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/crypto/curve25519"
 
-	pond "github.com/agl/pond/protos"
-	"github.com/agl/pond/server/protos"
-	"github.com/agl/pond/transport"
+	pond "github.com/unixninja92/Div-III-Server/protos"
+	"github.com/unixninja92/Div-III-Server/server/protos"
+	"github.com/unixninja92/Div-III-Server/transport"
 )
 
 var (

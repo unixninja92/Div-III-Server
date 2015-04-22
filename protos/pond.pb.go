@@ -24,6 +24,7 @@ It has these top-level messages:
 	DownloadReply
 	HMACSetup
 	HMACStrike
+	HMACPair
 	KeyExchange
 	SignedKeyExchange
 	Message
@@ -653,6 +654,41 @@ func (m *HMACStrike) GetHmacs() []uint64 {
 	return nil
 }
 
+// HMACPair contains a pair of Hmac values to be shared between clients
+type HMACPair struct {
+	// Ed25519 signing key
+	PrivateKey []byte `protobuf:"bytes,1,req,name=private_key" json:"private_key,omitempty"`
+	// verify key for ed25519 signing key
+	PulbicKey        []byte  `protobuf:"bytes,2,req,name=pulbic_key" json:"pulbic_key,omitempty"`
+	HmacOfPublicKey  *uint64 `protobuf:"fixed64,3,req,name=hmac_of_public_key" json:"hmac_of_public_key,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *HMACPair) Reset()         { *m = HMACPair{} }
+func (m *HMACPair) String() string { return proto.CompactTextString(m) }
+func (*HMACPair) ProtoMessage()    {}
+
+func (m *HMACPair) GetPrivateKey() []byte {
+	if m != nil {
+		return m.PrivateKey
+	}
+	return nil
+}
+
+func (m *HMACPair) GetPulbicKey() []byte {
+	if m != nil {
+		return m.PulbicKey
+	}
+	return nil
+}
+
+func (m *HMACPair) GetHmacOfPublicKey() uint64 {
+	if m != nil && m.HmacOfPublicKey != nil {
+		return *m.HmacOfPublicKey
+	}
+	return 0
+}
+
 // KeyExchange is a message sent between clients to establish a relation. It's
 // always found inside a SignedKeyExchange.
 type KeyExchange struct {
@@ -662,22 +698,22 @@ type KeyExchange struct {
 	// deliver a message to.)
 	// Note: in the most up-to-date revision of the Pond ratchet, this
 	// should be equal to |public_key|, modulo isomorphism.
-	// required bytes identity_public = 2;
+	IdentityPublic []byte `protobuf:"bytes,2,req,name=identity_public" json:"identity_public,omitempty"`
 	// The URL of this user's home server.
-	Server *string `protobuf:"bytes,2,req,name=server" json:"server,omitempty"`
+	Server *string `protobuf:"bytes,3,req,name=server" json:"server,omitempty"`
 	// A Curve25519, initial Diffie-Hellman value.
-	Dh []byte `protobuf:"bytes,3,req,name=dh" json:"dh,omitempty"`
+	Dh []byte `protobuf:"bytes,4,req,name=dh" json:"dh,omitempty"`
 	// dh1 contains the second, curve25519, public key if the new-form
 	// ratchet is being used.
-	Dh1 []byte `protobuf:"bytes,4,opt,name=dh1" json:"dh1,omitempty"`
+	Dh1 []byte `protobuf:"bytes,5,req,name=dh1" json:"dh1,omitempty"`
 	// A serialised bbssig.Group.
 	// required bytes group = 5;
 	// A bbssig.PrivateKey to authorise message delivery.
 	// required bytes group_key = 6;
 	// hmac_of_public_key contains a 63-bit HMAC of public key using the
 	// HMAC key known to server and recipient.
-	HmacOfPublicKey  *uint64 `protobuf:"fixed64,5,req,name=hmac_of_public_key" json:"hmac_of_public_key,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	HmacPairs        []*HMACPair `protobuf:"bytes,6,rep,name=hmac_pairs" json:"hmac_pairs,omitempty"`
+	XXX_unrecognized []byte      `json:"-"`
 }
 
 func (m *KeyExchange) Reset()         { *m = KeyExchange{} }
@@ -687,6 +723,13 @@ func (*KeyExchange) ProtoMessage()    {}
 func (m *KeyExchange) GetPublicKey() []byte {
 	if m != nil {
 		return m.PublicKey
+	}
+	return nil
+}
+
+func (m *KeyExchange) GetIdentityPublic() []byte {
+	if m != nil {
+		return m.IdentityPublic
 	}
 	return nil
 }
@@ -712,11 +755,11 @@ func (m *KeyExchange) GetDh1() []byte {
 	return nil
 }
 
-func (m *KeyExchange) GetHmacOfPublicKey() uint64 {
-	if m != nil && m.HmacOfPublicKey != nil {
-		return *m.HmacOfPublicKey
+func (m *KeyExchange) GetHmacPairs() []*HMACPair {
+	if m != nil {
+		return m.HmacPairs
 	}
-	return 0
+	return nil
 }
 
 // A SignedKeyExchange is a message that's sent between clients and exposed in
@@ -767,6 +810,7 @@ type Message struct {
 	// also_ack contains message ids for other messages that are also
 	// acknowledged by this message.
 	AlsoAck       []uint64              `protobuf:"varint,10,rep,name=also_ack" json:"also_ack,omitempty"`
+	NewHmacPairs  []*HMACPair           `protobuf:"bytes,11,rep,name=new_hmac_pairs" json:"new_hmac_pairs,omitempty"`
 	Files         []*Message_Attachment `protobuf:"bytes,7,rep,name=files" json:"files,omitempty"`
 	DetachedFiles []*Message_Detachment `protobuf:"bytes,8,rep,name=detached_files" json:"detached_files,omitempty"`
 	// supported_version allows a client to advertise the maximum supported
@@ -824,6 +868,13 @@ func (m *Message) GetInReplyTo() uint64 {
 func (m *Message) GetAlsoAck() []uint64 {
 	if m != nil {
 		return m.AlsoAck
+	}
+	return nil
+}
+
+func (m *Message) GetNewHmacPairs() []*HMACPair {
+	if m != nil {
+		return m.NewHmacPairs
 	}
 	return nil
 }

@@ -21,7 +21,7 @@ import (
 // working in streaming mode. Each block is prefixed by two length bytes (which
 // aren't counted in blockSize) and includes secretbox.Overhead bytes of MAC
 // tag (which are).
-const blockSize = 4096 - 2
+const blockSize = 4096 - 4
 
 type Conn struct {
 	conn                     io.ReadWriteCloser
@@ -96,13 +96,13 @@ func (c *Conn) Read(out []byte) (n int, err error) {
 	}
 
 	if c.readBuffer == nil {
-		c.readBuffer = make([]byte, blockSize+2)
+		c.readBuffer = make([]byte, blockSize+4)
 	}
 
-	if _, err := io.ReadFull(c.conn, c.readBuffer[:2]); err != nil {
+	if _, err := io.ReadFull(c.conn, c.readBuffer[:4]); err != nil {
 		return 0, err
 	}
-	n = int(c.readBuffer[0]) | int(c.readBuffer[1])<<8
+	n = int(c.readBuffer[3]) | int(c.readBuffer[2])<<8  | int(c.readBuffer[1])<<12 | int(c.readBuffer[0])<<16
 	if n > len(c.readBuffer) {
 		return 0, errors.New("transport: peer's message too large for Read")
 	}
@@ -133,7 +133,7 @@ func (c *Conn) Read(out []byte) (n int, err error) {
 
 func (c *Conn) Write(buf []byte) (n int, err error) {
 	if c.writeBuffer == nil {
-		c.writeBuffer = make([]byte, blockSize+2)
+		c.writeBuffer = make([]byte, blockSize+4)
 	}
 
 	for len(buf) > 0 {
@@ -141,10 +141,12 @@ func (c *Conn) Write(buf []byte) (n int, err error) {
 		if m > blockSize-secretbox.Overhead {
 			m = blockSize - secretbox.Overhead
 		}
-		l := len(secretbox.Seal(c.writeBuffer[2:2], buf[:m], &c.writeSequence, &c.writeKey))
-		c.writeBuffer[0] = byte(l)
-		c.writeBuffer[1] = byte(l >> 8)
-		if _, err = c.conn.Write(c.writeBuffer[:2+l]); err != nil {
+		l := len(secretbox.Seal(c.writeBuffer[4:4], buf[:m], &c.writeSequence, &c.writeKey))
+		c.writeBuffer[3] = byte(l)
+		c.writeBuffer[2] = byte(l >> 8)
+		c.writeBuffer[1] = byte(l >> 12)
+		c.writeBuffer[0] = byte(l >> 16)
+		if _, err = c.conn.Write(c.writeBuffer[:4+l]); err != nil {
 			return n, err
 		}
 		n += m

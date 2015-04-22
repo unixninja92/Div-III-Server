@@ -161,7 +161,7 @@ func main() {
 }
 
 func handleConnection(server *Server, rawConn net.Conn, identity *[32]byte) {
-	rawConn.SetDeadline(time.Now().Add(30 * time.Second))
+	rawConn.SetDeadline(time.Now().Add(120 * time.Second))
 	conn := transport.NewServer(rawConn, identity)
 
 	if err := conn.Handshake(); err != nil {

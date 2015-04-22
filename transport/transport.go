@@ -165,7 +165,7 @@ func (c *Conn) ReadProto(out proto.Message) error {
 		return errors.New("transport: message wrong length")
 	}
 
-	n = int(buf[0]) | int(buf[1])<<8 | int(buf[2])<<12 | int(buf[3])<<16
+	n = int(buf[3]) | int(buf[2])<<8 | int(buf[1])<<12 | int(buf[0])<<16
 	buf = buf[4:]
 	if n > len(buf) {
 		return errors.New("transport: corrupt message")
@@ -183,10 +183,10 @@ func (c *Conn) WriteProto(msg proto.Message) error {
 	}
 
 	buf := make([]byte, pond.TransportSize+4)
-	buf[0] = byte(len(data))
-	buf[1] = byte(len(data) >> 8)
-	buf[2] = byte(len(data) >> 12)
-	buf[3] = byte(len(data) >> 16)
+	buf[3] = byte(len(data))
+	buf[2] = byte(len(data) >> 8)
+	buf[1] = byte(len(data) >> 12)
+	buf[0] = byte(len(data) >> 16)
 	copy(buf[4:], data)
 	_, err = c.write(buf)
 	return err
@@ -226,7 +226,7 @@ func (c *Conn) read(data []byte) (n int, err error) {
 		return 0, err
 	}
 
-	theirLength := int(lengthBytes[0]) + int(lengthBytes[1])<<8 + int(lengthBytes[2])<<12 + int(lengthBytes[3])<<16
+	theirLength := int(lengthBytes[3]) + int(lengthBytes[2])<<8 + int(lengthBytes[1])<<12 + int(lengthBytes[0])<<16
 	if theirLength > len(data) {
 		return 0, errors.New("tranport: given buffer too small (" + strconv.Itoa(len(data)) + " vs " + strconv.Itoa(theirLength) + ")")
 	}
@@ -249,10 +249,10 @@ func (c *Conn) write(data []byte) (n int, err error) {
 	encrypted := c.encrypt(data)
 
 	var lengthBytes [4]byte
-	lengthBytes[0] = byte(len(encrypted))
-	lengthBytes[1] = byte(len(encrypted) >> 8)
-	lengthBytes[2] = byte(len(encrypted) >> 12)
-	lengthBytes[3] = byte(len(encrypted) >> 16)
+	lengthBytes[3] = byte(len(encrypted))
+	lengthBytes[2] = byte(len(encrypted) >> 8)
+	lengthBytes[1] = byte(len(encrypted) >> 12)
+	lengthBytes[0] = byte(len(encrypted) >> 16)
 
 	if _, err := c.conn.Write(lengthBytes[:]); err != nil {
 		return 0, err

@@ -284,7 +284,7 @@ func (c *Conn) decrypt(data []byte) ([]byte, error) {
 	decrypted, ok := secretbox.Open(nil, data, &c.readSequence, &c.readKey)
 	incSequence(&c.readSequence)
 	if !ok {
-		return nil, errors.New("transport: bad MAC")
+		return nil, errors.New("transport: decrypt bad MAC")
 	}
 	return decrypted, nil
 }

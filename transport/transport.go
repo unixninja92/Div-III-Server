@@ -161,7 +161,7 @@ func (c *Conn) ReadProto(out proto.Message) error {
 	if err != nil {
 		return err
 	}
-	if n != pond.TransportSize+4 {
+	if n != pond.TransportSize+3 {
 		return errors.New("transport: message wrong length")
 	}
 

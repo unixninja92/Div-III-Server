@@ -4,7 +4,7 @@ import "golang.org/x/crypto/nacl/secretbox"
 
 // TransportSize is the number of bytes that all payloads are padded to before
 // sending on the network.
-const TransportSize = 4257760 - 2 - secretbox.Overhead
+const TransportSize = 16384 - 2 - secretbox.Overhead
 
 // MessageOverhead is the number of bytes reserved for wrapping a Message up in
 // protobufs. That includes the overhead of the protobufs themselves, as well

@@ -768,9 +768,9 @@ func authenticateDeliveryWithHMAC(account *Account, del *pond.Delivery) (*pond.R
 	digest := binary.LittleEndian.Uint64(digestFull) & hmacValueMask
 
 
-	fmt.Printf("%d vs %d \n", int64(digest), *del.HmacOfPublicKey);
+	fmt.Printf("%d vs %d \n", digest, *del.HmacOfPublicKey);
 
-	if int64(digest) != *del.HmacOfPublicKey {
+	if digest != *del.HmacOfPublicKey {
 		return &pond.Reply{Status: pond.Reply_HMAC_INCORRECT.Enum()}, false
 	}
 

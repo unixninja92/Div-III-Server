@@ -795,6 +795,7 @@ func timeToFilenamePrefix(t time.Time) string {
 }
 
 func (s *Server) deliver(from *[32]byte, del *pond.Delivery) *pond.Reply {
+	fmt.Printf("%s\n", "proto message: we gots us a message to deliver!!");
 	var to [32]byte
 	if len(del.To) != len(to) {
 		return &pond.Reply{Status: pond.Reply_PARSE_ERROR.Enum()}
@@ -838,6 +839,8 @@ func (s *Server) deliver(from *[32]byte, del *pond.Delivery) *pond.Reply {
 
 	serialized, _ := proto.Marshal(del)
 
+fmt.Printf("%s\n", "We know who to send it to!!!!");
+
 	path := account.Path()
 	dir, err := os.Open(path)
 	if err != nil {
@@ -863,6 +866,7 @@ func (s *Server) deliver(from *[32]byte, del *pond.Delivery) *pond.Reply {
 		log.Printf("failed to write %s: %s", msgPath, err)
 		return &pond.Reply{Status: pond.Reply_INTERNAL_ERROR.Enum()}
 	}
+fmt.Printf("%s\n", "Message saved!?!?");
 
 	return &pond.Reply{}
 }

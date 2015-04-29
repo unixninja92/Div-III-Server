@@ -475,18 +475,23 @@ func (s *Server) Process(conn *transport.Conn) {
 
 	switch {
 	case req.NewAccount != nil:
+		fmt.Printf("%s\n", "NewAccount");
 		reply = s.newAccount(from, req.NewAccount)
 	case req.Deliver != nil:
+		fmt.Printf("%s\n", "Deliver");
 		reply = s.deliver(from, req.Deliver)
 	case req.Fetch != nil:
+		fmt.Printf("%s\n", "Fetch");
 		reply, messageFetched = s.fetch(from, req.Fetch)
 	case req.Upload != nil:
+		fmt.Printf("%s\n", "Upload");
 		reply = s.upload(from, conn, req.Upload)
 		if reply == nil {
 			// Connection will be handled by upload.
 			return
 		}
 	case req.Download != nil:
+		fmt.Printf("%s\n", "Download");
 		reply = s.download(conn, req.Download)
 		if reply == nil {
 			// Connection will be handled by download.
@@ -495,10 +500,13 @@ func (s *Server) Process(conn *transport.Conn) {
 	// case req.Revocation != nil:
 	// 	reply = s.revocation(from, req.Revocation)
 	case req.HmacSetup != nil:
+		fmt.Printf("%s\n", "HMACSetup");
 		reply = s.hmacSetup(from, req.HmacSetup)
 	case req.HmacStrike != nil:
+		fmt.Printf("%s\n", "HmacStrike");
 		reply = s.hmacStrike(from, req.HmacStrike)
 	default:
+		fmt.Printf("%s\n", "Nothing");
 		reply = &pond.Reply{Status: pond.Reply_NO_REQUEST.Enum()}
 	}
 

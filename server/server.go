@@ -765,7 +765,7 @@ func authenticateDeliveryWithHMAC(account *Account, del *pond.Delivery) (*pond.R
 	h := hmac.New(sha256.New, hmacKey[:])
 	h.Write(del.OneTimePublicKey)
 	digestFull := h.Sum(nil)
-	digest := binary.LittleEndian.Uint64(digestFull) & hmacValueMask
+	digest := int64(binary.LittleEndian.Uint64(digestFull)) & hmacValueMask
 
 
 	fmt.Printf("%d vs %d \n", digest, *del.HmacOfPublicKey);

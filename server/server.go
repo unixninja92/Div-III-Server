@@ -768,6 +768,7 @@ func authenticateDeliveryWithHMAC(account *Account, del *pond.Delivery) (*pond.R
 	digest := binary.LittleEndian.Uint64(digestFull) & hmacValueMask
 
 
+	fmt.Printf("%d vs %d \n", digest, *del.HmacOfPublicKey);
 	fmt.Printf("%d vs %d \n", int64(digest), int64(*del.HmacOfPublicKey));
 
 	if int64(digest) != int64(*del.HmacOfPublicKey) {
